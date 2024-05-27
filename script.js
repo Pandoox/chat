@@ -8,27 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const messageForm = document.getElementById('messageForm');
   const messageInput = document.getElementById('messageInput');
 
-  const socket = new WebSocket('ws://localhost:3000');
-
-  socket.addEventListener('open', () => {
-    socket.send(JSON.stringify({ type: 'join', username }));
-  });
-
-  socket.addEventListener('message', (event) => {
-    const messageData = JSON.parse(event.data);
-
-    if (messageData.type === 'history') {
-      messageData.messages.forEach(message => addMessage(message.username, message.text));
-    } else if (messageData.type === 'message') {
-      addMessage(messageData.username, messageData.text);
-    }
-  });
-
   messageForm.addEventListener('submit', function(e) {
     e.preventDefault();
     const message = messageInput.value;
     if (message.trim()) {
-      socket.send(JSON.stringify({ type: 'message', text: message, username }));
+      addMessage(username, message);
       messageInput.value = '';
     }
   });
@@ -50,4 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWindow.appendChild(messageElement);
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }
+
+  // Placeholder for message reception simulation
+ 
 });
