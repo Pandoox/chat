@@ -7,12 +7,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatWindow = document.getElementById('chatWindow');
   const messageForm = document.getElementById('messageForm');
   const messageInput = document.getElementById('messageInput');
+  
+  const socket = new WebSocket('ws://localhost:3000');
+
+  socket.addEventListener('open', () => {
+    socket.send(JSON.stringify({ type: 'join', username }));
+  });
+
+  socket.addEventListener('message', (event) => {
+    const messageData = JSON.parse(event.data);
+    addMessage(messageData.username, messageData.text);
+  });
 
   messageForm.addEventListener('submit', function(e) {
     e.preventDefault();
     const message = messageInput.value;
     if (message.trim()) {
-      addMessage(username, message);
+      socket.send(JSON.stringify({ type: 'message', text: message, username }));
       messageInput.value = '';
     }
   });
@@ -34,7 +45,4 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWindow.appendChild(messageElement);
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }
-
-  // Placeholder for message reception simulation
-
 });
