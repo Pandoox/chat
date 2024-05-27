@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatWindow = document.getElementById('chatWindow');
   const messageForm = document.getElementById('messageForm');
   const messageInput = document.getElementById('messageInput');
-  
+
   const socket = new WebSocket('ws://localhost:3000');
 
   socket.addEventListener('open', () => {
@@ -16,7 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   socket.addEventListener('message', (event) => {
     const messageData = JSON.parse(event.data);
-    addMessage(messageData.username, messageData.text);
+
+    if (messageData.type === 'history') {
+      messageData.messages.forEach(message => addMessage(message.username, message.text));
+    } else if (messageData.type === 'message') {
+      addMessage(messageData.username, messageData.text);
+    }
   });
 
   messageForm.addEventListener('submit', function(e) {
