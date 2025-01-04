@@ -1,27 +1,23 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entrar no Chat</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Cliente</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Bem-vindo ao Chat</h1>
-    <form id="nameForm">
-      <label for="username">Escolha seu nome:</label>
-      <input type="text" id="username" name="username" required>
-      <button type="submit">Entrar</button>
-    </form>
-  </div>
-  <script>
-    document.getElementById('nameForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      localStorage.setItem('chatUsername', username);
-      window.location.href = 'chat.html';
-    });
-  </script>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1>Chat Cliente</h1>
+        </header>
+        <div id="chat-log" class="chat-log"></div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Digite sua mensagem...">
+            <button id="send-message-btn">Enviar</button>
+            <button id="send-file-btn">Enviar Arquivo</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
