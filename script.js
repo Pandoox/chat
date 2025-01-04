@@ -1,40 +1,55 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const username = localStorage.getItem('chatUsername');
-  if (!username) {
-    window.location.href = 'index.html';
-  }
+const serverUrl = "ws://cliente15.ddns.net:12345"; // Atualize com o URL do WebSocket
+let socket;
 
-  const chatWindow = document.getElementById('chatWindow');
-  const messageForm = document.getElementById('messageForm');
-  const messageInput = document.getElementById('messageInput');
+// Conectar ao WebSocket
+function connectToServer() {
+    socket = new WebSocket(serverUrl);
 
-  messageForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const message = messageInput.value;
-    if (message.trim()) {
-      addMessage(username, message);
-      messageInput.value = '';
+    socket.onopen = () => {
+        addMessage("Conectado ao servidor.", "server-message");
+    };
+
+    socket.onmessage = (event) => {
+        addMessage(event.data, "server-message");
+    };
+
+    socket.onclose = () => {
+        addMessage("Conexão encerrada.", "server-message");
+    };
+
+    socket.onerror = (error) => {
+        addMessage(`Erro: ${error}`, "server-message");
+    };
+}
+
+// Adicionar mensagem ao log
+function addMessage(message, className) {
+    const chatLog = document.getElementById("chat-log");
+    const messageDiv = document.createElement("div");
+    messageDiv.className = className;
+    messageDiv.textContent = message;
+    chatLog.appendChild(messageDiv);
+    chatLog.scrollTop = chatLog.scrollHeight; // Rolar para o final
+}
+
+// Enviar mensagem
+function sendMessage() {
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value.trim();
+    if (message && socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+        addMessage(`Você: ${message}`, "user-message");
+        messageInput.value = "";
     }
-  });
+}
 
-  function addMessage(username, text) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
-
-    const usernameElement = document.createElement('span');
-    usernameElement.classList.add('username');
-    usernameElement.textContent = username;
-
-    const textElement = document.createElement('span');
-    textElement.classList.add('text');
-    textElement.textContent = text;
-
-    messageElement.appendChild(usernameElement);
-    messageElement.appendChild(textElement);
-    chatWindow.appendChild(messageElement);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }
-
-  // Placeholder for message reception simulation
- 
+// Eventos
+document.getElementById("send-message-btn").addEventListener("click", sendMessage);
+document.getElementById("message-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
 });
+
+// Inicializar
+connectToServer();
